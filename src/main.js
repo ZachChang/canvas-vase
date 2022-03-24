@@ -1,19 +1,20 @@
-import { randomColor } from './color';
-import { defaultVase, vaseBtn } from './config';
+import { randomColor, getRandomInt } from './helper';
+import { vaseTemplate, vaseBtn } from './config';
 
 const main = () => {
 // Set up our canvas
 let canvas = document.getElementById('vase_canvas');
 let btnCanvas = document.getElementById('btn_canvas');
-btnCanvas.addEventListener('click', function() { console.log('yo') }, false);
-canvas.width = 0;
+btnCanvas.addEventListener('click', function() { drawVase() }, false);
+canvas.width = 50;
 canvas.height = window.innerHeight;
 btnCanvas.width = window.innerWidth;
 btnCanvas.height = window.innerHeight
 let ctx = canvas.getContext('2d');
 let btnCtx = btnCanvas.getContext('2d');
-let vaseSet = defaultVase;
+let vaseSet = [];
 const bottom = window.innerHeight/2 + 250;
+let increaseX = 100;
 
 // Animation function
 const drawBtn = () => {
@@ -44,6 +45,14 @@ const drawBtn = () => {
 }
 
 const drawVase = () => {
+    const randomTemplate = vaseTemplate[getRandomInt(3)];
+    vaseSet.push({
+        ...randomTemplate,
+        baseX: increaseX,
+        color: randomColor(),
+        randomInt: getRandomInt(10)
+    })
+    canvas.width += 180;
     let ellPercent = 0;
     let cubePercent = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -52,168 +61,40 @@ const drawVase = () => {
         vaseSet.forEach(vase => {
             vase.ellpise.forEach(ellpise => {
                 drawEllipse({
+                    ctx,
                     ...ellpise,
-                    y: bottom + ellpise.y,
-                    aniEllipseR: ellPercent
+                    x: vase.baseX,
+                    color: vase.color,
+                    y: bottom + ellpise.y + vase.randomInt,
+                    rx: ellpise.rx + vase.randomInt*1.5,
+                    ry: ellpise.ry + vase.randomInt*1.5,
+                    aniEllipseR: ellPercent,
                 })
             })
             drawCube({
+                ctx,
                 ...vase.cube,
-                endY: bottom + vase.cube.endY,
+                color: vase.color,
+                centerX: vase.baseX,
+                endY: bottom + vase.cube.endY + vase.randomInt,
+                topR: vase.cube.topR + vase.randomInt*1.5,
+                bottomR: vase.cube.bottomR + vase.randomInt*1.5,
+                maxStartY: vase.cube.maxStartY + vase.randomInt*5,
                 startY: bottom + vase.cube.endY - cubePercent
             })
         })
         ellPercent ++;
         cubePercent += 5;
-        const lastCube = vaseSet[vaseSet.length-1].cube;
-        const currCubeTop = bottom + lastCube.endY - cubePercent
-        if (lastCube.maxStartY <  currCubeTop) {
+
+        if (cubePercent < 2000) {
             requestAnimationFrame(render)
         }
     }
     render()
+    increaseX += (100 + getRandomInt(100)) ;
 }
+
 drawBtn()
-// drawVase()
-// function drawVase(x, height){
-//   // clear the canvas
-//   ctx.clearRect(0, 0, canvas.width, canvas.height);
-//   // drawVase the vase
-//   const bottom = window.innerHeight/2 + 250;
-//   const cubeTop1 = 200;
-//   const cubeTop2 = 350;
-//   const cubeTop3 = 230;
-//   const cubeEnd = bottom+20;
-//   let aniEllipseR = 0;
-//   let aniCube = cubeEnd;
-//   const maxEllipseR = 100;
-//   const vaseX1 = x+20;
-//   const vaseX2 = x+200;
-//   const vaseX3 = x+400;
-//   const r1 = 255;
-//   const g1 = 141;
-//   const b1 = 75;
-//   const r2 = 221
-//   const g2 = 160;
-//   const b2 = 221;
-//   const r3 = 30;
-//   const g3 = 144;
-//   const b3 = 255;
-//   function render() {
-//     ctx.clearRect(0, 0, canvas.width, canvas.height);
-//     drawEllipse(
-//         vaseX1,
-//         bottom,
-//         100,
-//         30,
-//         0,
-//         `rgba(${r1}, ${g1}, ${b1}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawEllipse(
-//         vaseX1,
-//         bottom - height/4,
-//         35,
-//         70,
-//         0,
-//         `rgba(${r1}, ${g1}, ${b1}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawEllipse(
-//         vaseX1,
-//         bottom - height/2,
-//         80,
-//         20,
-//         0,
-//         `rgba(${r1}, ${g1}, ${b1}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawEllipse(
-//         vaseX1,
-//         bottom - height/2 - 100,
-//         35,
-//         70,
-//         0,
-//         `rgba(${r1}, ${g1}, ${b1}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawCube(vaseX1, aniCube, cubeEnd, 15, 15, `rgba(${r1}, ${g1}, ${b1}, 0.6)`, cubeTop1)
-
-
-
-//       drawEllipse(
-//         vaseX2,
-//         bottom,
-//         120,
-//         50,
-//         0,
-//         `rgba(${r2}, ${g2}, ${b2}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawEllipse(
-//         vaseX2,
-//         bottom - height/2 + 40,
-//         100,
-//         70,
-//         0,
-//         `rgba(${r2}, ${g2}, ${b2}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawCube(vaseX2, aniCube, cubeEnd, 30, 40, `rgba(${r2}, ${g2}, ${b2}, 0.6)`, cubeTop2)
-
-//       setTimeout(() => {
-          
-//       }, 2000);
-
-//       drawEllipse(
-//         vaseX3,
-//         bottom,
-//         120,
-//         40,
-//         0,
-//         `rgba(${r3}, ${g3}, ${b3}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawEllipse(
-//         vaseX3,
-//         bottom - height/4,
-//         50,
-//         100,
-//         0,
-//         `rgba(${r3}, ${g3}, ${b3}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawEllipse(
-//         vaseX3,
-//         bottom - height/2,
-//         100,
-//         40,
-//         0,
-//         `rgba(${r3}, ${g3}, ${b3}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawEllipse(
-//         vaseX3,
-//         bottom - height/2 - 100,
-//         30,
-//         80,
-//         0,
-//         `rgba(${r3}, ${g3}, ${b3}, 0.9)`,
-//         aniEllipseR
-//       );
-//       drawCube(vaseX3, aniCube, cubeEnd, 20, 25, `rgba(${r3}, ${g3}, ${b3}, 0.6)`, cubeTop3)
-
-
-
-//       aniEllipseR += 1;
-//       aniCube -=2;
-//       if (aniEllipseR < maxEllipseR || aniCube > cubeTop1 || aniCube > cubeTop2) {
-//         requestAnimationFrame(render)
-//       }
-//   }
-//   render()
-// }
-// drawVase(100, 400);
 
 // Draw a cube to the specified specs
 function drawTriangle({ ctx, color, wobble }) {
