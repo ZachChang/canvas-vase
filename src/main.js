@@ -8,7 +8,7 @@ let btnCanvas = document.getElementById('btn_canvas');
 btnCanvas.addEventListener('click', function() { drawVase() }, false);
 canvas.width = 50;
 canvas.height = window.innerHeight;
-btnCanvas.width = window.innerWidth;
+btnCanvas.width = 250;
 btnCanvas.height = window.innerHeight
 let ctx = canvas.getContext('2d');
 let btnCtx = btnCanvas.getContext('2d');
@@ -18,7 +18,7 @@ let increaseX = 100;
 
 // Animation function
 const drawBtn = () => {
-    const btnBottom = window.innerHeight/2 - 50;
+    const btnBottom = 120;
     btnCtx.clearRect(0, 0, btnCanvas.width, btnCanvas.height);
     let wobble = Math.sin(Date.now()/250)*window.innerHeight/50;
     
@@ -40,7 +40,7 @@ const drawBtn = () => {
     })
     btnCtx.fillStyle = 'black';
     btnCtx.font = "16px Georgia";
-    btnCtx.fillText("Click to add a vase!", 70, btnBottom+60);
+    btnCtx.fillText("Click to plant a vase!", 70, btnBottom+60);
     requestAnimationFrame(drawBtn);
 }
 
@@ -56,6 +56,7 @@ const drawVase = () => {
     let ellPercent = 0;
     let cubePercent = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     const render = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         vaseSet.forEach(vase => {
@@ -82,11 +83,18 @@ const drawVase = () => {
                 maxStartY: vase.cube.maxStartY + vase.randomInt*5,
                 startY: bottom + vase.cube.endY - cubePercent
             })
+            const currDate = new Date()
+            ctx.fillStyle = 'black';
+            ctx.font = "12px Georgia";
+            ctx.fillText(
+                `${currDate.getMonth()}/${currDate.getDate()} - ${currDate.getHours()}:${currDate.getMinutes()}`,
+                vase.baseX - 30,
+                bottom + 50
+            );
         })
         ellPercent ++;
         cubePercent += 5;
-
-        if (cubePercent < 2000) {
+        if (cubePercent < 1000) {
             requestAnimationFrame(render)
         }
     }
@@ -99,9 +107,9 @@ drawBtn()
 // Draw a cube to the specified specs
 function drawTriangle({ ctx, color, wobble }) {
     ctx.beginPath();
-    ctx.moveTo(125, 270+wobble);
-    ctx.lineTo(140, 280+wobble);
-    ctx.lineTo(125, 290+wobble);
+    ctx.moveTo(125, 20+wobble);
+    ctx.lineTo(140, 30+wobble);
+    ctx.lineTo(125, 40+wobble);
     ctx.fillStyle = color
     ctx.fill();
 }
