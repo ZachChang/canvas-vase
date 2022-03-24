@@ -1,17 +1,49 @@
 import { randomColor } from './color';
-import { defaultVase } from './config';
+import { defaultVase, vaseBtn } from './config';
 
 const main = () => {
 // Set up our canvas
-var canvas = document.createElement('canvas');
-canvas.width = window.innerWidth;
+let canvas = document.getElementById('vase_canvas');
+let btnCanvas = document.getElementById('btn_canvas');
+btnCanvas.addEventListener('click', function() { console.log('yo') }, false);
+canvas.width = 0;
 canvas.height = window.innerHeight;
-document.body.appendChild(canvas);
-var ctx = canvas.getContext('2d');
-const vaseSet = defaultVase;
+btnCanvas.width = window.innerWidth;
+btnCanvas.height = window.innerHeight
+let ctx = canvas.getContext('2d');
+let btnCtx = btnCanvas.getContext('2d');
+let vaseSet = defaultVase;
+const bottom = window.innerHeight/2 + 250;
+
 // Animation function
+const drawBtn = () => {
+    const btnBottom = window.innerHeight/2 - 50;
+    btnCtx.clearRect(0, 0, btnCanvas.width, btnCanvas.height);
+    let wobble = Math.sin(Date.now()/250)*window.innerHeight/50;
+    
+    vaseBtn.ellpise.forEach(ellpise => {
+        drawEllipse({
+            ctx: btnCtx,
+            ...ellpise,
+            y: btnBottom + ellpise.y + wobble,
+            aniEllipseR: ellpise.rx
+        })
+    })
+    drawTriangle({ ctx: btnCtx, color: vaseBtn.cube.color, wobble})
+    drawCube({
+        ctx: btnCtx,
+        ...vaseBtn.cube,
+        endY: btnBottom + vaseBtn.cube.endY + wobble,
+        startY: vaseBtn.cube.maxStartY + wobble,
+        maxStartY: vaseBtn.cube.maxStartY + wobble
+    })
+    btnCtx.fillStyle = 'black';
+    btnCtx.font = "16px Georgia";
+    btnCtx.fillText("Click to add a vase!", 70, btnBottom+60);
+    requestAnimationFrame(drawBtn);
+}
+
 const drawVase = () => {
-    const bottom = window.innerHeight/2 + 250;
     let ellPercent = 0;
     let cubePercent = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -41,7 +73,8 @@ const drawVase = () => {
     }
     render()
 }
-drawVase()
+drawBtn()
+// drawVase()
 // function drawVase(x, height){
 //   // clear the canvas
 //   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -183,7 +216,16 @@ drawVase()
 // drawVase(100, 400);
 
 // Draw a cube to the specified specs
-function drawCube({ centerX, startY, endY, topR, bottomR, color, maxStartY} ) {
+function drawTriangle({ ctx, color, wobble }) {
+    ctx.beginPath();
+    ctx.moveTo(125, 270+wobble);
+    ctx.lineTo(140, 280+wobble);
+    ctx.lineTo(125, 290+wobble);
+    ctx.fillStyle = color
+    ctx.fill();
+}
+
+function drawCube({ ctx, centerX, startY, endY, topR, bottomR, color, maxStartY }) {
     let aniY = 0;
     if (startY > maxStartY) {
         aniY = startY;
@@ -192,7 +234,7 @@ function drawCube({ centerX, startY, endY, topR, bottomR, color, maxStartY} ) {
     }
     let grd = ctx.createLinearGradient(centerX-bottomR, aniY, centerX+bottomR, aniY);
     grd.addColorStop(0, color);
-    grd.addColorStop(1, 'rgba(255, 215, 191, 0.1');
+    grd.addColorStop(1, 'rgba(255, 215, 191, 0.4');
     ctx.beginPath();
     ctx.moveTo(centerX - topR, aniY);
     ctx.lineTo(centerX - bottomR, endY);
@@ -202,7 +244,7 @@ function drawCube({ centerX, startY, endY, topR, bottomR, color, maxStartY} ) {
     ctx.fillStyle = grd;
     ctx.fill();
 }
-function drawEllipse ({ x, y, rx, ry, rotate, color, aniEllipseR}) {
+function drawEllipse ({ ctx, x, y, rx, ry, rotate, color, aniEllipseR}) {
     let grd = ctx.createRadialGradient(x-70, y, 8, x, y, 130);
     let currR = 0;
     if (aniEllipseR < rx) {

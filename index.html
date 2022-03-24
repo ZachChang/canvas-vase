@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>vase</title>
+    <title>plant vase</title>
     <style>
         html {
             box-sizing: border-box;
@@ -23,14 +23,24 @@
             font: 14px 'Oxygen', Helvetica;
             background: #ececec;
         }
+        .main{
+            display: flex;
+            align-items: center;
+        }
+        #btn_canvas {
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
     <body>
         <main id="app"></main>
+        <div class='main'>
+            <canvas id='vase_canvas'></canvas>
+            <canvas id='btn_canvas' ></canvas>
+        </div>
         <script async src="<%= htmlWebpackPlugin.files.chunks.main.entry %>"></script>
-
         <noscript>
             This site uses JavaScript. Please enable JavaScript in your browser.
         </noscript>
